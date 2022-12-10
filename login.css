@@ -1,0 +1,151 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: hsl(252, 30%, 90%);
+  position: relative;
+}
+.hint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* height: 100px; */
+  background-color: hsl(252, 30%, 90%);
+  z-index: 333;
+  /* width: 200px; */
+  padding: 1rem;
+}
+
+#content {
+  width: 350px;
+  padding: 50px;
+  box-shadow: 0 11px 17px 5px rgb(0 0 0 / 33%);
+  border-radius: 50px;
+  background-color: hsl(252, 30%, 100%);
+}
+
+#content > h1 {
+  text-align: center;
+}
+
+.input-bar {
+  width: 350px;
+  height: 60px;
+  border: 2px solid #000;
+  border-radius: 25px;
+  margin: 30px 0;
+  opacity: 0.5;
+  transition: 200ms;
+  font-weight: 600;
+  position: relative;
+}
+
+.input-bar > label {
+  position: absolute;
+  font-size: 17px;
+  text-transform: capitalize;
+  top: 20px;
+  left: 45px;
+  transition: 200ms;
+}
+
+.input-bar > input {
+  position: absolute;
+  width: 100%;
+  border-radius: 25px;
+
+  height: 100%;
+  border: none;
+  background: none;
+  box-sizing: border-box;
+  padding: 20px 45px 10px;
+  font-size: 18px;
+}
+
+.input-bar > box-icon {
+  position: absolute;
+  width: 26px;
+  top: 17px;
+  left: 10px;
+}
+
+.focus {
+  opacity: 1;
+}
+
+.focus > label {
+  top: 2px;
+  font-size: 12px;
+}
+
+#login-btn {
+  width: 350px;
+  border: none;
+  padding: 15px;
+  color: #fff;
+  background-color: #000;
+  font-size: 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  background-color: hsl(252, 75%, 60%);
+}
+
+@media screen and (max-width: 500px) {
+  #content {
+    width: 200px;
+  }
+  .input-bar {
+    width: 190px;
+    height: 35px;
+    margin: 20px 0;
+  }
+  .input-bar > label {
+    position: absolute;
+    font-size: 13px;
+    text-transform: capitalize;
+    top: 7px;
+    left: 25px;
+    transition: 200ms;
+  }
+
+  .input-bar > input {
+    position: absolute;
+    width: 190px;
+    border-radius: 25px;
+  
+    height: 100%;
+    border: none;
+    background: none;
+    box-sizing: border-box;
+    padding: 20px 25px 10px;
+    font-size: 12px;
+  }
+  .input-bar > box-icon {
+    position: absolute;
+    width: 26px;
+    top: 13px;
+    left: 10px;
+  }
+  .focus > label {
+    top: -2px;
+    font-size: 10px;
+  }
+  .hint{
+    font-size: 12px;
+  }
+  #login-btn {
+    width: 190px;
+    height: 45px;
+    font-size: 15px;
+    text-align: center;
+  }
+}
