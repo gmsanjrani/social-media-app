@@ -17,7 +17,7 @@ login.forEach((e) => {
 // check onload on body
 function checkLogin() {
   if (JSON.parse(localStorage.getItem("user")).token) {
-    window.location.replace("http://127.0.0.1:5500/home.html");
+    window.location.replace("home.html");
   }
 }
 
@@ -51,7 +51,7 @@ loginButton.addEventListener("click", async function () {
     //   check token
     if (user.token) {
       localStorage.setItem("user", JSON.stringify(user));
-      window.location.replace("http://127.0.0.1:5500/home.html");
+      window.location.replace("home.html");
     } else {
       alert("please enter valid credentials");
     }

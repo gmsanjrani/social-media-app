@@ -33,7 +33,7 @@ profileClick.addEventListener("click", () => {
 const logout = document.getElementById("logout");
 logout.addEventListener("click", () => {
   localStorage.removeItem("user");
-  window.location.replace("http://127.0.0.1:5500/index.html");
+  window.location.replace("./index.html");
 });
 
 // set Username and image in navbar
