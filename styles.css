@@ -94,20 +94,28 @@ nav .container {
 }
 
 .search-bar {
-  background: var(--color-light);
-  border-radius: var(--border-radius);
-  padding: var(--seacrh-padding);
+  
+  /* padding: var(--seacrh-padding); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* height: 2rem; */
+  gap: 0.5rem;
 }
 .search-bar input[type="search"] {
   background: transparent;
-  width: 30vw;
+  width: 20vw;
   height: 40px;
-  padding: 0.4rem;
+  padding: 0 0 0 1rem;
+  background: var(--color-light);
+  border-radius: var(--border-radius);
+
 }
+
 
 nav .search-bar input[type="search"]::placeholder {
   color: var(--color-gray);
+  font-size: 1rem;
 }
 input:focus {
   border: none;
@@ -400,11 +408,11 @@ main .container .left .profle {
   padding-top: 0.5rem;
 }
 
-.comment-section{
+.middle .comment-section{
   padding: 1.5rem 1rem;
 }
 
-.all-comments{
+.middle .all-comments{
   margin-bottom: 2rem;
   /* display: none; */
 }
@@ -418,9 +426,6 @@ main .container .left .profle {
   white-space: nowrap;
   overflow: hidden;
         text-overflow: "----";
-}
-.all-comments .info h2{
-
 }
 
 .edit-comments{
@@ -448,10 +453,11 @@ main .container .left .profle {
     background-color: var(--color-gray);
     height: 1.7rem;
     border-radius: 10px;
-    margin-bottom: 3px;
-    /* border-radius: ; */
+
     display: flex;
-    /* gap: 1rem; */
+}
+.middle .comment-buttons{
+  display: none;
 }
 .comment-buttons button{
   height: 30px;

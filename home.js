@@ -1,5 +1,6 @@
 // check token onload on body
 
+
 // Left sidebar click background change function
 const menuItems = document.querySelectorAll(".menu-item");
 const changeActiveItem = () => {
@@ -28,10 +29,11 @@ profileClick.addEventListener("click", () => {
   }
 });
 
+// Function for Logout
 const logout = document.getElementById("logout");
 logout.addEventListener("click", () => {
   localStorage.removeItem("user");
-  window.location.replace("http://127.0.0.1:5500/login.html");
+  window.location.replace("http://127.0.0.1:5500/index.html");
 });
 
 // set Username and image in navbar
@@ -41,34 +43,64 @@ let userImage = document.getElementById("profile-photo");
 userName.innerText = `${userData.firstName}`;
 userImage.src = `${userData.image}`;
 
-// get all posts
-let show = false
-async function getPosts(count, search = null) {
-  const feeds = document.getElementById("feeds");
-  let postsArray = [];
 
-  if (search) {
+// This the main Function where all apis get called
+async function getPosts(skip = 0, search = null, userSearch = false) {
+  const feeds = document.getElementById("feeds");
+
+  // Getting users data
+  let users = [];
+  const res = await fetch("https://dummyjson.com/users?limit=100");
+  const userData = await res.json();
+  users = userData.users;
+
+
+  // conditions on search
+  let postsArray = [];
+  if (userSearch == false && search) { // for search by post
     console.log("searching");
     const res = await fetch(`https://dummyjson.com/posts/search?q=${search}`);
     const data = await res.json();
-    feeds.innerHTML = ""
+    feeds.innerHTML = "";
     postsArray = data.posts;
-  } else if (count > 9) {
-    const res = await fetch(`https://dummyjson.com/posts?limit=${count}`);
+  } else if (skip >= 0 && !search) { // for normal case
+    if (skip == 0) {
+      feeds.innerHTML = "";
+    }
+    const res = await fetch(
+      `https://dummyjson.com/posts?limit=10&skip=${skip}`
+    );
     const data = await res.json();
-    feeds.innerHTML =""
     postsArray = data.posts;
     console.log("counting");
+  } else if (search && userSearch == true) {  // for search by username
+    console.log("searching user");
+    let userId;
+    for (let su = 0; su < users.length; su++) {
+      if (users[su].username == search) {
+        userId = users[su].id;
+      }
+    }
+    console.log(userId);
+    const res = await fetch(`https://dummyjson.com/posts/user/${userId}`);
+    const data = await res.json();
+    feeds.innerHTML = "";
+    postsArray = data.posts;
   }
 
-  console.log(postsArray.length);
-  let users = [];
-  const res = await fetch("https://dummyjson.com/users");
-  const userData = await res.json();
-  users = userData.users;
-  // console.log(users);
 
+  // Loop over posts data and displaying all the posts
   for (let i = 0; i < postsArray.length; i++) {
+
+    // getting user for each post
+    let user;
+    for (let u = 0; u < users.length; u++) {
+      if (postsArray[i].userId == users[u].id) {
+        user = users[u];
+      }
+    }
+
+    // getting comments for each post
     let comments = [];
     let res = await fetch(
       `https://dummyjson.com/posts/${postsArray[i].id}/comments`
@@ -76,19 +108,22 @@ async function getPosts(count, search = null) {
     let data = await res.json();
     comments = data.comments;
 
-    // console.log(user.firstName);
-    
+    // HTML for a POST
     const feed = `
   <div class="feed">
+
     <div class="user">
         <div class="profile-pic">
-            <img src="/images/profile-14.jpg" alt="">
+            <img src="${user.image}" alt="${user.id}">
         </div>
+
         <div class="info">
-            <h3>Ghulam Muhammad ${i + 1}</h3>
-            <small>Dubai, 15 MINUTES AGO</small>
+            <h3>${user.username}</h3>
+            <small>${user.firstName}</small>
         </div>
-        <span class="edit"><i class="uil uil-ellipsis-h"></i></></div>
+    </div>
+        
+     
         <div class="photo">
             <h2>${postsArray[i].title}</h2>
             <p style="font-size: 0.9rem;">${postsArray[i].body}</p>
@@ -114,99 +149,131 @@ async function getPosts(count, search = null) {
 
         <div class="caption">
         ${postsArray[i].tags.map((tag) => {
-          return `<span class="hash-tag">#${tag}</span>`;
-        })}     
+            return `<span class="hash-tag">#${tag}</span>`;})}     
         </div>
 
-        <form class="create-post">
+        <div class="create-post">
             <div class="profile-pic">
                 <img src="images/profile-9.jpg" alt="">
             </div>
-            <input type="text" placeholder="Write a Public Comment" id="create-post">
+            <input type="text" id="enter-comment" placeholder="Write a Public Comment" id="create-post">
             <button value="Post" class="btn btn-primary"> Post</button>
-        </form>
+        </div>
 
         <div class="comment-section" id="comment-section">
-        ${comments.map((com) => {
-          return `<div class="all-comments"  >
+        ${comments.map((com, index) => { // displaying comments
+
+          // getting images of comments
+          let images = "";
+          for (let c = 0; c < users.length; c++) {
+            if (com.user.id == users[c].id) {
+              images = users[c].image;
+            }
+          }
+        return `
+        <div class="all-comments"  >
           <div class="user" id="users-comments">
               <div class="profile-pic">
-                  <img src="./images/profile-12.jpg" alt="">
+                  <img src="${images}" alt="">
               </div>
               <div class="info">
                   <h4>${com.user.username}</h4>
                   <p>${com.body}</p>
               </div>
               <div class="edit-comments">
-                  <span class="edit" style="cursor:pointer;"><i
-                          class="uil uil-ellipsis-h"></i></span>
-                  <div class="comment-buttons">
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-primary">Delete</button>
+                  <span class="edit" style="cursor:pointer;" id="show-comments-btn" onclick="open(${com.id})"><i class="uil uil-ellipsis-h"></i></span>
+                  <div class="comment-buttons" id="edit-delete-btn">
+                      <button class="btn btn-primary" >Edit</button>
+                      <button class="btn btn-primary" >Delete</button>
                   </div>
               </div>
-          </div>
-          </div> `;
+            </div>
+          </div>`
         })}
-            
+        
         </div>
-    </div>
-    `;
+  </div>`;
+  
     feeds.innerHTML += feed;
-  }
+  }  //loop end
+} // post function end
 
-  // console.log(data.posts);
-}
+  
 
+
+// calling getPost function for different cases like search by post/ search by username
 let search = document.getElementById("search").value.trim();
 
-let count = 10;
-if (!search) {
-  getPosts(count);
+let skip = 0;
+if (!search) { // for normal case with load more button
+  getPosts(skip);
   const loadMore = document.getElementById("load-more");
   loadMore.addEventListener("click", () => {
-    if (count < 30) {
-      count += 10;
-      getPosts(count);
+    if (skip < 20) {
+      skip += 10;
+      getPosts(skip);
     }
-    if (count == 30) {
+    if (skip == 20) {
       loadMore.style.display = "none";
     }
     console.log("click");
   });
 }
 
-let searchBtn = document.getElementById("search-btn");
-searchBtn.addEventListener("click", () => {
+
+// search by post logic
+let searchPost = document.getElementById("search-post");
+searchPost.addEventListener("click", () => {
   let search = document.getElementById("search").value.trim();
   const loadMore = document.getElementById("load-more");
   console.log(search);
   if (search) {
     loadMore.style.display = "none";
+    console.log("clik search");
+    skip = 0;
+    getPosts(-1, search);
   } else {
-    let count = 10;
-    getPosts(count);
+    getPosts(skip);
     const loadMore = document.getElementById("load-more");
     loadMore.style.display = "block";
     loadMore.addEventListener("click", () => {
-      if (count < 30) {
-        count += 10;
-        getPosts(count);
+      if (skip < 20) {
+        skip += 10;
+        getPosts(skip);
       }
-      if (count == 30) {
+      if (skip == 20) {
         loadMore.style.display = "none";
       }
       console.log("click");
     });
   }
-  console.log("clik search");
-  getPosts(3, search);
 });
 
-const commentSection = document.getElementById("comment-section")
 
-
-
-
-
-
+// search by username logic
+let searchUser = document.getElementById("search-user");
+searchUser.addEventListener("click", () => {
+  let search = document.getElementById("search").value.trim();
+  const loadMore = document.getElementById("load-more");
+  console.log(search);
+  if (search) {
+    loadMore.style.display = "none";
+    console.log("clik search");
+    skip = 0;
+    getPosts(-1, search, true);
+  } else {
+    getPosts(skip);
+    const loadMore = document.getElementById("load-more");
+    loadMore.style.display = "block";
+    loadMore.addEventListener("click", () => {
+      if (skip < 20) {
+        skip += 10;
+        getPosts(skip);
+      }
+      if (skip == 20) {
+        loadMore.style.display = "none";
+      }
+      console.log("click");
+    });
+  }
+});
